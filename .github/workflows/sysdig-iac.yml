@@ -1,0 +1,37 @@
+name: Sysdig IaC Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  sysdig-iac-scan:
+    name: Sysdig IaC Scanner
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Decode Sysdig Token from Secrets
+        id: decode_token
+        run: |
+          echo "SYSDIG_SECURE_TOKEN=$(echo '${{ secrets.SYSDIG_SECURE_TOKEN_B64 }}' | base64 -d)" >> $GITHUB_ENV
+
+      - name: Run Sysdig IaC Scan
+        uses: sysdiglabs/scan-action@v5
+        with:
+          sysdig-secure-token: ${{ env.SYSDIG_SECURE_TOKEN }}
+          mode: iac
+          sysdig-secure-url: https://app.in1.sysdig.com
+          cli-scanner-version: 1.9.0
+          iac-scan-path: .
+          #minimum-severity: critical
+          recursive: true
