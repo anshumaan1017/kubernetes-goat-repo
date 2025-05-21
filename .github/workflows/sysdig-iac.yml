@@ -3,7 +3,7 @@ name: Sysdig IaC Scan
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 jobs:
